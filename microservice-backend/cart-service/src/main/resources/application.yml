@@ -1,0 +1,19 @@
+spring:
+    application:
+        name: cart-service
+    data:
+        mongodb:
+           uri: mongodb://root:example@purely_cart_service:27017/purely_cart_service?authSource=admin
+    jpa:
+        hibernate:
+            ddl-auto: update
+
+server:
+    port: 9060
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://eureka-server:8761/eureka/
+    instance:
+        hostname: cart-service

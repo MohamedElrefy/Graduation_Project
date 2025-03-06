@@ -1,0 +1,260 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    image: eureka-server:latest
+    container_name: eureka-server
+    build:
+      context: ./microservice-backend/service-registry
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    environment:
+      - spring.application.name=eureka-server
+    networks:
+      - eureka-network
+
+  cart-service:
+    image: cart-service:latest
+    container_name: cart-service
+    build:
+      context: ./microservice-backend/cart-service
+      dockerfile: Dockerfile
+    ports:
+      - "9060:9060"
+    environment:
+      
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+      - purely_cart_service
+
+  category-service:
+    image: category-service:latest
+    container_name: category-service
+    build:
+      context: ./microservice-backend/category-service
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    environment:
+      
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+      - purely_category_service
+
+  notification-service:
+    image: notification-service:latest
+    container_name: notification-service
+    build:
+      context: ./microservice-backend/notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "9020:9020"
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+
+  order-service:
+    image: order-service:latest
+    container_name: order-service
+    build:
+      context: ./microservice-backend/order-service
+      dockerfile: Dockerfile
+    ports:
+      - "9070:9070"
+    environment:
+      
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+      - purely_order_service
+
+  product-service:
+    image: product-service:latest
+    container_name: product-service
+    build:
+      context: ./microservice-backend/product-service
+      dockerfile: Dockerfile
+    ports:
+      - "9010:9010"
+    environment:
+      
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+      - purely_product_service
+
+  user-service:
+    image: user-service:latest
+    container_name: user-service
+    build:
+      context: ./microservice-backend/user-service
+      dockerfile: Dockerfile
+    ports:
+      - "9050:9050"
+    environment:
+      
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+      - purely_auth_service
+
+  api-gateway:
+    image: api-gateway:latest
+    container_name: api-gateway
+    build:
+      context: ./microservice-backend/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+      - auth-service
+      - user-service
+      - product-service
+      - category-service
+      - cart-service
+      - order-service
+      - notification-service
+
+  auth-service:
+    image: auth-service:latest
+    container_name: auth-service
+    build:
+      context: ./microservice-backend/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "9030:9030"
+    environment:
+     
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+      - purely_auth_service
+
+  purely_order_service:
+    image: mongo:4.4
+    container_name: purely_order_service
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: purely_order_service
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - purely_order_service:/data/db
+    networks:
+      - eureka-network
+
+  purely_auth_service:
+    image: mongo:4.4
+    container_name: purely_auth_service
+    restart: always
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: purely_auth_service
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - purely_auth_service:/data/db
+    networks:
+      - eureka-network
+
+  purely_product_service:
+    image: mongo:4.4
+    container_name: purely_product_service
+    restart: always
+    ports:
+      - "27019:27017"
+    environment:
+      MONGO_INITDB_DATABASE: purely_product_service
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - purely_product_service:/data/db
+      - ./mongo-init/purely_product_service/:/docker-entrypoint-initdb.d/
+    networks:
+      - eureka-network
+
+  purely_category_service:
+    image: mongo:4.4
+    container_name: purely_category_service
+    restart: always
+    ports:
+      - "27020:27017"
+    environment:
+      MONGO_INITDB_DATABASE: purely_category_service
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - purely_category_service:/data/db
+      - ./mongo-init/purely_category_service/:/docker-entrypoint-initdb.d/
+    networks:
+      - eureka-network
+
+  purely_cart_service:
+    image: mongo:4.4
+    container_name: purely_cart_service
+    restart: always
+    ports:
+      - "27021:27017"
+    environment:
+      MONGO_INITDB_DATABASE: purely_cart_service
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - purely_cart_service:/data/db
+      
+    networks:
+      - eureka-network
+
+  frontend:
+    image: frontend
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+    environment:
+      - API_BASE_URL=http://apigateway:8080
+    networks:
+      - eureka-network
+
+networks:
+  eureka-network:
+    driver: bridge
+
+volumes:
+  purely_auth_service:
+  purely_cart_service:
+  purely_category_service:
+  purely_order_service:
+  purely_product_service:
+  mongo-init:

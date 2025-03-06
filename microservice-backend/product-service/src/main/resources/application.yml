@@ -1,0 +1,19 @@
+spring:
+    application:
+        name: product-service
+    data:
+        mongodb:
+            uri: mongodb://root:example@purely_product_service:27017/purely_product_service?authSource=admin
+    jpa:
+        hibernate:
+            ddl-auto: update
+
+server:
+    port: 9010
+
+eureka:
+    client:
+        serviceUrl:
+            defaultZone: http://eureka-server:8761/eureka/
+    instance:
+        hostname: product-service
