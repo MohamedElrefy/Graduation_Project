@@ -1,3 +1,3 @@
-const API_BASE_URL = "http://api-gateway:8080"
+const API_BASE_URL = "http://localhost/api"
 
 export default API_BASE_URL;
