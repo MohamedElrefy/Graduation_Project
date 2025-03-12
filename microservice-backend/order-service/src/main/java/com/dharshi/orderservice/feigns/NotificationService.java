@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("NOTIFICATION-SERVICE")
+@FeignClient(name = "api-gateway", url = "http://api-gateway:8080", contextId = "notifyServiceFeignClient1")
 public interface NotificationService {
 
-    @PostMapping("/notification/send")
+    @PostMapping("/notification-service/notification/send")
     ResponseEntity<ApiResponseDto<?>> sendEmail(@RequestBody MailRequestDto requestDto);
 }

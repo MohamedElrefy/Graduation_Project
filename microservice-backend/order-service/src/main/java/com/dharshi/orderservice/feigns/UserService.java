@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("USER-SERVICE")
+@FeignClient(name = "api-gateway", url = "http://api-gateway:8080", contextId = "userServiceFeignClient1")
 public interface UserService {
 
-    @GetMapping("/user/get/byId")
+    @GetMapping("/user-service/user/get/byId")
     ResponseEntity<ApiResponseDto<UserDto>> getUserById(@RequestParam String id);
 
 }

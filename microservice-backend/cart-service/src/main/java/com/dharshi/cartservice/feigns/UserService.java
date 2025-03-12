@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("USER-SERVICE")
+@FeignClient(name = "api-gateway", url = "http://api-gateway:8080", contextId = "userServiceFeignClient1")
 public interface UserService {
 
-    @GetMapping("/user/exists/byId")
+    @GetMapping("/user-service/user/exists/byId")
     ResponseEntity<ApiResponseDto<Boolean>> existsUserById(@RequestParam String userId);
 
 }

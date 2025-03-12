@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient("NOTIFICATION-SERVICE")
 public interface NotificationService {
 
-    @PostMapping("/notification/send")
+    @PostMapping("/notification-service/notification/send")
     ResponseEntity<ApiResponseDto<?>> sendEmail(@RequestBody MailRequestDto requestDto);
 }

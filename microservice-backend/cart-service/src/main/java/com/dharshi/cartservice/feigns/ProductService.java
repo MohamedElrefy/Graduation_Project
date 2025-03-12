@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("PRODUCT-SERVICE")
+@FeignClient(name = "api-gateway", url = "http://api-gateway:8080", contextId = "productServiceFeignClient1")
 public interface ProductService {
 
-    @GetMapping("/product/get/byId")
+    @GetMapping("/product-service/product/get/byId")
     ResponseEntity<ApiResponseDto<ProductDto>> getProductById(@RequestParam String id);
 
 }

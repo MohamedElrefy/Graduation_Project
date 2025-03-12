@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("CART-SERVICE")
+@FeignClient(name = "api-gateway", url = "http://api-gateway:8080", contextId = "cartServiceFeignClient1")
 public interface CartService {
 
-    @GetMapping("/cart/get/byId")
+    @GetMapping("/cart-service/cart/get/byId")
     ResponseEntity<ApiResponseDto<CartDto>> getCartById(@RequestParam String id, @RequestHeader("Authorization") String token);
 
-    @DeleteMapping("/cart/clear/byId")
+    @DeleteMapping("/cart-service/cart/clear/byId")
     ResponseEntity<ApiResponseDto<?>> clearCartById(@RequestParam String id, @RequestHeader("Authorization") String token);
 
 }
