@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient("NOTIFICATION-SERVICE")
+@FeignClient(name = "api-gateway", url = "http://api-gateway:8080", contextId = "authServiceFeignClient13")
 public interface NotificationService {
 
     @PostMapping("/notification-service/notification/send")
