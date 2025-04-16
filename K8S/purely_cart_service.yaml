@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: purely-cart-service-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purely-cart-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: purely-cart-service
+  template:
+    metadata:
+      labels:
+        app: purely-cart-service
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:4.4
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: purely_cart_service
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: example
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-data
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: purely-cart-service-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: purely-cart-service
+spec:
+  selector:
+    app: purely-cart-service
+  ports:
+    - port: 27017
+      targetPort: 27017

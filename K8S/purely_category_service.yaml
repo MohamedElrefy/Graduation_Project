@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: purely-category-service-pvc
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purely-category-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: purely-category-service
+  template:
+    metadata:
+      labels:
+        app: purely-category-service
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:4.4
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: purely_category_service
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: root
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: example
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-data
+            - mountPath: /docker-entrypoint-initdb.d/
+              name: init-scripts
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: purely-category-service-pvc
+        - name: init-scripts
+          hostPath:
+            path: /home/mohamed/Desktop/Fullstack-E-commerce-web-application-main/K8S/purely_category_service
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: purely-category-service
+spec:
+  selector:
+    app: purely-category-service
+  ports:
+    - port: 27017
+      targetPort: 27017

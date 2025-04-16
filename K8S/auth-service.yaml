@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 purely-auth-service 27017; do echo 'Waiting for MongoDB...'; sleep 5; done;"
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 eureka-server 8761; do echo 'Waiting for Eureka...'; sleep 5; done;"    
+      
+      containers:
+        - name: auth-service
+          image: mohamedelrefy20/auth-service:latest
+          ports:
+            - containerPort: 9030
+          env:
+            - name: SPRING_SECURITY_LOG_LEVEL
+              value: DEBUG
+            - name: eureka.client.service-url.defaultZone
+              value: http://eureka-server:8761/eureka/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 9030
+      targetPort: 9030
+  type: ClusterIP

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      initContainers:
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 eureka-server 8761; do echo 'Waiting for Eureka...'; sleep 5; done;"    
+      containers:
+        - name: notification-service
+          image: mohamedelrefy20/notification-service:latest
+          ports:
+            - containerPort: 9020
+          env:
+            - name: SPRING_SECURITY_LOG_LEVEL
+              value: DEBUG
+            - name: eureka.client.service-url.defaultZone
+              value: http://eureka-server:8761/eureka/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - protocol: TCP
+      port: 9020
+      targetPort: 9020
+  type: ClusterIP

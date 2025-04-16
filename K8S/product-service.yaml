@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 purely-product-service 27017; do echo 'Waiting for MongoDB...'; sleep 5; done;"
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 eureka-server 8761; do echo 'Waiting for Eureka...'; sleep 5; done;"        
+      containers:
+        - name: product-service
+          image: mohamedelrefy20/product-service:latest
+          ports:
+            - containerPort: 9010
+          env:
+            - name: SPRING_SECURITY_LOG_LEVEL
+              value: DEBUG
+            - name: eureka.client.service-url.defaultZone
+              value: http://eureka-server:8761/eureka/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product-service
+  ports:
+    - protocol: TCP
+      port: 9010
+      targetPort: 9010
+  type: ClusterIP

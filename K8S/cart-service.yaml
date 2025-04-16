@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart-service
+  template:
+    metadata:
+      labels:
+        app: cart-service
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 purely-cart-service 27017; do echo 'Waiting for MongoDB...'; sleep 5; done;"
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 eureka-server 8761; do echo 'Waiting for Eureka...'; sleep 5; done;"    
+      
+      containers:
+        - name: cart-service
+          image: mohamedelrefy20/cart-service:latest
+          ports:
+            - containerPort: 9060
+          env:
+            - name: SPRING_SECURITY_LOG_LEVEL
+              value: DEBUG
+            - name: eureka.client.service-url.defaultZone
+              value: http://eureka-server:8761/eureka/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+spec:
+  selector:
+    app: cart-service
+  ports:
+    - protocol: TCP
+      port: 9060
+      targetPort: 9060
+  type: ClusterIP
