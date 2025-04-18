@@ -12,37 +12,6 @@ spec:
       labels:
         app: api-gateway
     spec:
-      initContainers:
-        - name: wait-for-eureka
-          image: busybox
-          command:
-            - sh
-            - -c
-            - "until nc -z -v -w30 eureka-server 8761; do echo 'Waiting for Eureka...'; sleep 5; done;"
-        - name: wait-for-auth
-          image: busybox
-          command:
-            - sh
-            - -c
-            - "until nc -z -v -w30 auth-service 9030; do echo 'Waiting for Auth Service...'; sleep 5; done;"
-        - name: wait-for-user
-          image: busybox
-          command:
-            - sh
-            - -c
-            - "until nc -z -v -w30 user-service 9050; do echo 'Waiting for User Service...'; sleep 5; done;"
-        - name: wait-for-product
-          image: busybox
-          command:
-            - sh
-            - -c
-            - "until nc -z -v -w30 product-service 9010; do echo 'Waiting for Product Service...'; sleep 5; done;"
-        - name: wait-for-order
-          image: busybox
-          command:
-            - sh
-            - -c
-            - "until nc -z -v -w30 order-service 9070; do echo 'Waiting for Order Service...'; sleep 5; done;"
       containers:
         - name: api-gateway
           image: mohamedelrefy20/api-gateway:latest

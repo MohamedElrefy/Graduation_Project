@@ -47,7 +47,7 @@ spec:
             claimName: purely-product-service-pvc
         - name: init-scripts
           hostPath:
-            path: /home/mohamed/Desktop/Fullstack-E-commerce-web-application-main/K8S/purely_product_service
+            path: /home/init-script/purely_product_service
             type: Directory
 ---
 apiVersion: v1

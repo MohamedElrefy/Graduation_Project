@@ -19,7 +19,7 @@ spec:
             - containerPort: 80
           env:
             - name: API_BASE_URL
-              value: http://purely.com/api-gateway:8080
+              value: http://purely.com/api-gateway
 ---
 apiVersion: v1
 kind: Service
