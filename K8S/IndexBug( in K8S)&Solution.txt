@@ -1,0 +1,17 @@
+## 🐞 Bug: Duplicate Cart Documents Causing Index Creation Failure
+
+### Issue
+During deployment, if multiple cart documents exist for the same `userId`, the `cart-service` container fails with the following error:
+Failed to find cart: Query { "$java" : Query: { "userId" : "6803507dfec18f03a95e406f"}, Fields: {}, Sort: {} } returned non unique result
+__________________________________________________________________________________________________
+
+### Cause
+This occurs because a **unique index on `userId`** is being created during initialization, but **duplicate documents already exist** in the `carts` collection.
+
+### Fix
+issue is resolved by adding an initContainer to the Kubernetes deployment of the cart-servic 
+This container ensures that:
+-Any existing duplicate cart documents for the same user are removed.
+-A unique index is created on the userId field to prevent duplicates in the future
+
+This fix ensures that each user can only have one cart document, maintaining data integrity and preventing runtime errors in the service.
