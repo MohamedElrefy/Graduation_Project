@@ -3,7 +3,7 @@ spring:
         name: order-service
     data:
         mongodb:
-            uri: mongodb://root:example@purely_order_service:27017/purely_order_service?authSource=admin
+            uri: mongodb://root:example@purely-order-service:27017/purely_order_service?authSource=admin
     jpa:
         hibernate:
             ddl-auto: update

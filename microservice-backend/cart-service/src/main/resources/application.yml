@@ -3,7 +3,7 @@ spring:
         name: cart-service
     data:
         mongodb:
-           uri: mongodb://root:example@purely_cart_service:27017/purely_cart_service?authSource=admin
+           uri: mongodb://root:example@purely-cart-service:27017/purely_cart_service?authSource=admin
     jpa:
         hibernate:
             ddl-auto: update

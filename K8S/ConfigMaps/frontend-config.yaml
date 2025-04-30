@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: front-config
+  namespace: purely-app
+data:
+  API_BASE_URL: "http://purely.com/api-gateway"
