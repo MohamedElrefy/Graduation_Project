@@ -12,14 +12,7 @@ spec:
     metadata:
       labels:
         app: notification-service
-    spec:
-      initContainers:
-        - name: wait-for-eureka
-          image: busybox
-          command:
-            - sh
-            - -c
-            - "until nc -z -v -w30 eureka-server 8761; do echo 'Waiting for Eureka...'; sleep 5; done;"    
+    spec:   
       containers:
         - name: notification-service
           image: mohamedelrefy20/notification-service:latest

@@ -1,20 +1,21 @@
-# Use OpenJDK 21 instead of 17
-FROM openjdk:21-jdk-slim
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the entire project first
-COPY . .
+COPY pom.xml .
 
-# Grant execute permissions to the Maven wrapper
-RUN chmod +x mvnw
+RUN mvn dependency:go-offline -B
 
-# Build the application using Maven wrapper
-RUN ./mvnw clean package -DskipTests
+COPY src ./src
 
-# Expose the application port (change if needed)
-EXPOSE 8080
+RUN mvn clean package -DskipTests
 
-# Run the application
-CMD ["sh", "-c", "java -jar target/*.jar"]
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
+EXPOSE 9030
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

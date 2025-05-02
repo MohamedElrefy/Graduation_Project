@@ -20,12 +20,7 @@ spec:
             - sh
             - -c
             - "until nc -z -v -w30 purely-cart-service 27017; do echo 'Waiting for MongoDB...'; sleep 5; done;"
-        - name: wait-for-eureka
-          image: busybox
-          command:
-            - sh
-            - -c
-            - "until nc -z -v -w30 eureka-server 8761; do echo 'Waiting for Eureka...'; sleep 5; done;"    
+         
         - name: init-mongo-index
           image: mongo:4.4
           command:
@@ -58,7 +53,7 @@ spec:
 
       containers:
         - name: cart-service
-          image: mohamedelrefy20/cart-service:latest
+          image: mohamedelrefy20/tcart-service:latest
           ports:
             - containerPort: 9060
           env:
