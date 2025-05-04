@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: mohamedelrefy20/tapi-gateway:latest
+          image: mohamedelrefy20/api-gateway:latest
           ports:
             - containerPort: 8080
           env:

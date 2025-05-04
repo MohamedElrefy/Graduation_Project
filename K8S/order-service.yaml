@@ -23,14 +23,23 @@ spec:
               
       containers:
         - name: order-service
-          image: mohamedelrefy20/torder-service:latest
+          image: mohamedelrefy20/order-service:latest
           ports:
             - containerPort: 9070
+          envFrom:
+          - configMapRef:
+              name: order-service-config
           env:
-            - name: SPRING_SECURITY_LOG_LEVEL
-              value: DEBUG
-            - name: eureka.client.service-url.defaultZone
-              value: http://eureka-server:8761/eureka/
+          - name: MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: MONGO_USER
+          - name: MONGO_PASS
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: MONGO_PASS
 ---
 apiVersion: v1
 kind: Service

@@ -19,10 +19,16 @@ spec:
           ports:
             - containerPort: 9020
           env:
-            - name: SPRING_SECURITY_LOG_LEVEL
-              value: DEBUG
-            - name: eureka.client.service-url.defaultZone
-              value: http://eureka-server:8761/eureka/
+          - name: SPRING_MAIL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: SPRING_MAIL_USERNAME
+          - name: SPRING_MAIL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: SPRING_MAIL_PASSWORD
 ---
 apiVersion: v1
 kind: Service

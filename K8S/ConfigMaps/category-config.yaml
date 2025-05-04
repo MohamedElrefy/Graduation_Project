@@ -9,4 +9,4 @@ data:
   SPRING_DATA_MONGODB_PORT: "27017"
   SPRING_DATA_MONGODB_DATABASE: purely_category_service
   SPRING_SECURITY_LOG_LEVEL: DEBUG
-  eureka_client_service_url_defaultZone: http://eureka-server:8761/eureka/
+  EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: eureka-server
-          image: mohamedelrefy20/teureka-server:latest
+          image: mohamedelrefy20/eureka-server:latest
           ports:
             - containerPort: 8761
           env:

@@ -18,9 +18,9 @@ spec:
           image: mohamedelrefy20/frontend:latest
           ports:
             - containerPort: 80
-          env:
-            - name: API_BASE_URL
-              value: http://purely.com/api-gateway
+          envFrom:
+          - configMapRef:
+              name: front-config
 ---
 apiVersion: v1
 kind: Service
