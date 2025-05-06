@@ -1,0 +1,84 @@
+ {{- if .Values.purelyAuthService.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: purely-auth-service-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.purelyAuthService.pvc.storage }}
+{{- end }}
+
+---
+
+{{- if .Values.purelyCartService.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: purely-cart-service-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.purelyCartService.pvc.storage }}
+{{- end }}
+
+---
+
+
+{{- if .Values.purelyCategoryService.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: purely-category-service-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: {{ .Values.purelyCategoryService.pvc.storageClassName }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.purelyCategoryService.pvc.storage }}
+{{- end }}
+
+
+---
+
+
+{{- if .Values.purelyOrderService.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: purely-order-service-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.purelyOrderService.pvc.storage }}
+{{- end }}
+
+
+---
+
+
+{{- if .Values.purelyProductService.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: purely-product-service-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.purelyProductService.pvc.storage }}
+{{- end }}

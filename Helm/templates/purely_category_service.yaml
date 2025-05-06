@@ -1,0 +1,59 @@
+{{- if .Values.purelyCategoryService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purely-category-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.purelyCategoryService.replicaCount }}
+  selector:
+    matchLabels:
+      app: purely-category-service
+  template:
+    metadata:
+      labels:
+        app: purely-category-service
+    spec:
+      containers:
+        - name: mongo
+          image: {{ .Values.purelyCategoryService.image.repository }}:{{ .Values.purelyCategoryService.image.tag }}
+          ports:
+            - containerPort: {{ .Values.purelyCategoryService.containerPort }}
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.purelyCategoryService.env.database }}
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.purelyCategoryService.env.username }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.purelyCategoryService.env.password }}
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-data
+            - mountPath: /docker-entrypoint-initdb.d/
+              name: init-scripts
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: purely-category-service-pvc
+        - name: init-scripts
+          hostPath:
+            path: {{ .Values.purelyCategoryService.initScriptPath }}
+            type: Directory
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: purely-category-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: purely-category-service
+  ports:
+    - port: {{ .Values.purelyCategoryService.service.port }}
+      targetPort: {{ .Values.purelyCategoryService.containerPort }}
+  type: {{ .Values.purelyCategoryService.service.type }}
+{{- end }}

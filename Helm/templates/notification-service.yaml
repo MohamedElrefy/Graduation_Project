@@ -1,0 +1,51 @@
+{{- if .Values.notificationService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.notificationService.replicaCount }}
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      initContainers:
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.notificationService.eurekaHost }} {{ .Values.notificationService.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"    
+      containers:
+        - name: notification-service
+          image: "{{ .Values.notificationService.image.repository }}:{{ .Values.notificationService.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.notificationService.containerPort }}
+          envFrom:
+            - secretRef:
+                 name: {{ .Values.secretName }} 
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - protocol: TCP
+      port: {{ .Values.notificationService.service.port }}
+      targetPort: {{ .Values.notificationService.containerPort }}
+  type: {{ .Values.notificationService.service.type }}
+
+{{- end }}

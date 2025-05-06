@@ -1,0 +1,55 @@
+{{- if .Values.categoryService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: category-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.categoryService.replicaCount }}
+  selector:
+    matchLabels:
+      app: category-service
+  template:
+    metadata:
+      labels:
+        app: category-service
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.categoryService.init.mongoHost }} {{ .Values.categoryService.init.mongoPort }}; do echo 'Waiting for MongoDB...'; sleep 5; done;"
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.categoryService.init.eurekaHost }} {{ .Values.categoryService.init.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"
+      containers:
+        - name: category-service
+          image: "{{ .Values.categoryService.image.repository }}:{{ .Values.categoryService.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.categoryService.containerPort }}
+          envFrom:
+            - configMapRef:
+                 name: category-service-config  
+            - secretRef:
+                name: {{ .Values.secretName }} 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: category-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: category-service
+  ports:
+    - protocol: TCP
+      port: {{ .Values.categoryService.service.port }}
+      targetPort: {{ .Values.categoryService.containerPort }}
+  type: {{ .Values.categoryService.service.type }}
+
+{{- end }}

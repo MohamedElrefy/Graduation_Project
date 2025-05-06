@@ -1,0 +1,58 @@
+{{- if .Values.orderService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.orderService.replicaCount }}
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.orderService.mongoHost }} {{ .Values.orderService.mongoPort }}; do echo 'Waiting for MongoDB...'; sleep 5; done;"
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.orderService.eurekaHost }} {{ .Values.orderService.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"        
+      containers:
+        - name: order-service
+          image: "{{ .Values.orderService.image.repository }}:{{ .Values.orderService.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.orderService.containerPort }}
+          envFrom:
+            - configMapRef:
+                 name: order-service-config  
+            - secretRef:
+                 name: {{ .Values.secretName }} 
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: order-service
+  ports:
+    - protocol: TCP
+      port: {{ .Values.orderService.service.port }}
+      targetPort: {{ .Values.orderService.containerPort }}
+  type: {{ .Values.orderService.service.type }}
+
+{{- end }}

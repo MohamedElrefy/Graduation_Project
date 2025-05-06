@@ -1,0 +1,57 @@
+{{- if .Values.productService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.productService.replicaCount }}
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.productService.mongoHost }} {{ .Values.productService.mongoPort }}; do echo 'Waiting for MongoDB...'; sleep 5; done;"
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.productService.eurekaHost }} {{ .Values.productService.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"
+      containers:
+        - name: product-service
+          image: "{{ .Values.productService.image.repository }}:{{ .Values.productService.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.productService.containerPort }}
+          envFrom:
+            - configMapRef:
+                 name: product-service-config  
+            - secretRef:
+                name: {{ .Values.secretName }} 
+  
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: product-service
+  ports:
+    - protocol: TCP
+      port: {{ .Values.productService.service.port }}
+      targetPort: {{ .Values.productService.containerPort }}
+  type: {{ .Values.productService.service.type }}
+{{- end }}

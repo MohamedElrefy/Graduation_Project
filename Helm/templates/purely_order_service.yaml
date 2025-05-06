@@ -1,0 +1,53 @@
+{{- if .Values.purelyOrderService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purely-order-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.purelyOrderService.replicaCount }}
+  selector:
+    matchLabels:
+      app: purely-order-service
+  template:
+    metadata:
+      labels:
+        app: purely-order-service
+    spec:
+      containers:
+        - name: mongo
+          image: {{ .Values.purelyOrderService.image.repository }}:{{ .Values.purelyOrderService.image.tag }}
+          ports:
+            - containerPort: {{ .Values.purelyOrderService.containerPort }}
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.purelyOrderService.env.database }}
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.purelyOrderService.env.username }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.purelyOrderService.env.password }}
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-data
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: purely-order-service-pvc
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: purely-order-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: purely-order-service
+  ports:
+    - port: {{ .Values.purelyOrderService.service.port }}
+      targetPort: {{ .Values.purelyOrderService.containerPort }}
+  type: {{ .Values.purelyOrderService.service.type }}
+{{- end }}

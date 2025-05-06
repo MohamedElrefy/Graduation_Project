@@ -1,0 +1,82 @@
+{{- if .Values.cartService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.cartService.replicaCount }}
+  selector:
+    matchLabels:
+      app: cart-service
+  template:
+    metadata:
+      labels:
+        app: cart-service
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.cartService.init.mongoHost }} {{ .Values.cartService.init.mongoPort }}; do echo 'Waiting for MongoDB...'; sleep 5; done;"
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.cartService.init.eurekaHost }} {{ .Values.cartService.init.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"
+        - name: init-mongo-index
+          image: mongo:4.4
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until mongo --host {{ .Values.cartService.init.mongoHost }} \
+                          --username {{ .Values.cartService.init.mongoUser }} \
+                          --password {{ .Values.cartService.init.mongoPassword }} \
+                          --authenticationDatabase admin \
+                          --eval '
+                            db = db.getSiblingDB("purely_cart_service");
+                            let seen = {};
+                            db.carts.find().forEach(function(doc) {
+                              if (seen[doc.userId]) {
+                                db.carts.deleteOne({_id: doc._id});
+                              } else {
+                                seen[doc.userId] = true;
+                              }
+                            });
+                            db.carts.createIndex({"userId":1},{unique:true});
+                          '; do
+                echo "Retrying...";
+                sleep 2;
+              done
+      containers:
+        - name: cart-service
+          image: "{{ .Values.cartService.image.repository }}:{{ .Values.cartService.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.cartService.containerPort }}
+          envFrom:
+            - configMapRef:
+                 name: cart-service-config  
+            - secretRef:
+                name: {{ .Values.secretName }} 
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: cart-service
+  ports:
+    - protocol: TCP
+      port: {{ .Values.cartService.service.port }}
+      targetPort: {{ .Values.cartService.containerPort }}
+  type: {{ .Values.cartService.service.type }}
+
+{{- end }}

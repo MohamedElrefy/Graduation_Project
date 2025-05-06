@@ -1,0 +1,53 @@
+#-----------------------------------------------------------------------
+{{- if .Values.purelyCartService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purely-cart-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.purelyCartService.replicaCount }}
+  selector:
+    matchLabels:
+      app: purely-cart-service
+  template:
+    metadata:
+      labels:
+        app: purely-cart-service
+    spec:
+      containers:
+        - name: mongo
+          image: {{ .Values.purelyCartService.image.repository }}:{{ .Values.purelyCartService.image.tag }}
+          ports:
+            - containerPort: {{ .Values.purelyCartService.containerPort }}
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.purelyCartService.env.database }}
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.purelyCartService.env.username }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.purelyCartService.env.password }}
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-data
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: purely-cart-service-pvc
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: purely-cart-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: purely-cart-service
+  ports:
+    - port: {{ .Values.purelyCartService.service.port }}
+      targetPort: {{ .Values.purelyCartService.containerPort }}
+  type: {{ .Values.purelyCartService.service.type }}
+{{- end }}

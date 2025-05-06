@@ -1,0 +1,43 @@
+{{- if .Values.eurekaServer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eureka-server
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.eurekaServer.replicaCount }}
+  selector:
+    matchLabels:
+      app: eureka-server
+  template:
+    metadata:
+      labels:
+        app: eureka-server
+    spec:
+      containers:
+        - name: eureka-server
+          image: "{{ .Values.eurekaServer.image.repository }}:{{ .Values.eurekaServer.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.eurekaServer.containerPort }}
+          env:
+            - name: spring.application.name
+              value: "{{ .Values.eurekaServer.env.springAppName }}"
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka-server
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: eureka-server
+  ports:
+    - protocol: TCP
+      port: {{ .Values.eurekaServer.service.port }}
+      targetPort: {{ .Values.eurekaServer.containerPort }}
+  type: {{ .Values.eurekaServer.service.type }}
+
+{{- end }}

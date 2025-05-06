@@ -1,0 +1,58 @@
+{{- if .Values.purelyProductService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purely-product-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.purelyProductService.replicaCount }}
+  selector:
+    matchLabels:
+      app: purely-product-service
+  template:
+    metadata:
+      labels:
+        app: purely-product-service
+    spec:
+      containers:
+        - name: mongo
+          image: {{ .Values.purelyProductService.image.repository }}:{{ .Values.purelyProductService.image.tag }}
+          ports:
+            - containerPort: {{ .Values.purelyProductService.containerPort }}
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.purelyProductService.env.database }}
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.purelyProductService.env.username }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.purelyProductService.env.password }}
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-data
+            - mountPath: /docker-entrypoint-initdb.d/
+              name: init-scripts
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: purely-product-service-pvc
+        - name: init-scripts
+          hostPath:
+            path: {{ .Values.purelyProductService.initScriptsPath }}
+            type: Directory
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: purely-product-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: purely-product-service
+  ports:
+    - port: {{ .Values.purelyProductService.service.port }}
+      targetPort: {{ .Values.purelyProductService.containerPort }}
+  type: {{ .Values.purelyProductService.service.type }}
+{{- end }}

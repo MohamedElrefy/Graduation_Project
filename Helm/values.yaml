@@ -1,0 +1,335 @@
+# Namespace 
+# -----------------------------
+namespace: purely-app
+
+# -----------------------------
+# API Gateway
+# -----------------------------
+apiGateway:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/api-gateway
+    tag: latest
+  containerPort: 8080
+  service:
+    type: ClusterIP
+    port: 8080
+  env:
+    eurekaDefaultZone: http://eureka-server:8761/eureka/
+
+# -----------------------------------------------------
+# Auth Service
+# -----------------------------------------------------
+authService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/auth-service
+    tag: latest
+  containerPort: 9030
+  service:
+    type: ClusterIP
+    port: 9030
+  init:
+    mongoHost: purely-auth-service
+    mongoPort: 27017
+    eurekaHost: eureka-server
+    eurekaPort: 8761
+  env:
+    springSecurityLogLevel: DEBUG
+    eurekaDefaultZone: http://eureka-server:8761/eureka/
+
+# -----------------------------------------------------
+# Cart Service
+# ----------------------------------------------------
+cartService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/cart-service
+    tag: latest
+  containerPort: 9060
+  service:
+    type: ClusterIP
+    port: 9060
+  init:
+    mongoHost: purely-cart-service
+    mongoPort: 27017
+    mongoUser: root
+    mongoPassword: example
+    eurekaHost: eureka-server
+    eurekaPort: 8761
+  env:
+    springSecurityLogLevel: DEBUG
+    eurekaDefaultZone: http://eureka-server:8761/eureka/
+
+# ---------------------------------------------------------------
+# Category Service
+# ---------------------------------------------------------------
+categoryService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/category-service
+    tag: latest
+  containerPort: 9000
+  service:
+    type: ClusterIP
+    port: 9000
+  init:
+    mongoHost: purely-category-service
+    mongoPort: 27017
+    eurekaHost: eureka-server
+    eurekaPort: 8761
+  env:
+    springSecurityLogLevel: DEBUG
+    eurekaDefaultZone: http://eureka-server:8761/eureka/
+
+#---------------------------------------------------------------------
+# Eureka Server
+# -----------------------------------------------------------------------
+eurekaServer:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/eureka-server
+    tag: latest
+  containerPort: 8761
+  service:
+    type: ClusterIP
+    port: 8761
+  env:
+    springAppName: "eureka-server"
+     
+# -------------------------------------------------
+# Frontend Service
+# --------------------------------------------------
+frontend:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/frontend
+    tag: latest
+  containerPort: 80
+  service:
+    type: ClusterIP
+    port: 80
+  
+
+# --------------------------------------------
+# Notification Service
+# ---------------------------------------------
+notificationService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/notification-service
+    tag: latest
+  containerPort: 9020
+  service:
+    type: ClusterIP
+    port: 9020
+  eurekaHost: eureka-server
+  eurekaPort: 8761
+  env:
+    springSecurityLogLevel: DEBUG
+    eurekaDefaultZone: http://eureka-server:8761/eureka/
+
+# ----------------------------------------------------------
+# Order Service
+# -----------------------------------------------------------
+orderService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/order-service
+    tag: latest
+  containerPort: 9070
+  service:
+    type: ClusterIP
+    port: 9070
+  mongoHost: purely-order-service
+  mongoPort: 27017
+  eurekaHost: eureka-server
+  eurekaPort: 8761
+  env:
+    springSecurityLogLevel: DEBUG
+    eurekaDefaultZone: http://eureka-server:8761/eureka/
+
+# ----------------------------------------------------------
+# product Service
+# -----------------------------------------------------------
+productService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/product-service
+    tag: latest
+  containerPort: 9010
+  service:
+    type: ClusterIP
+    port: 9010
+  mongoHost: purely-product-service
+  mongoPort: 27017
+  eurekaHost: eureka-server
+  eurekaPort: 8761
+  env:
+    springSecurityLogLevel: DEBUG
+    eurekaDefaultZone: http://eureka-server:8761/eureka/
+
+
+# --------------------------------------------------
+# Purely Auth Service
+# ---------------------------------------------------
+purelyAuthService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mongo
+    tag: "4.4"
+  containerPort: 27017
+  pvc:
+    storage: 1Gi
+  env:
+    database: purely_auth_service
+    username: root
+    password: example
+  service:
+    type: ClusterIP
+    port: 27017
+
+# ----------------------------------------
+# Purely Cart Service - Values
+# ---------------------------------------
+purelyCartService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mongo
+    tag: 4.4
+  containerPort: 27017
+  service:
+    type: ClusterIP
+    port: 27017
+  pvc:
+    storage: 1Gi
+  env:
+    database: purely_cart_service
+    username: root
+    password: example
+
+# -----------------------------------------
+# Purely Category Service
+# -----------------------------------------
+purelyCategoryService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mongo
+    tag: "4.4"
+  containerPort: 27017
+  pvc:
+    storageClassName: standard
+    storage: 1Gi
+  env:
+    database: purely_category_service
+    username: root
+    password: example
+  initScriptPath: /home/init-script/purely_category_service
+  service:
+    type: ClusterIP
+    port: 27017
+
+
+# -----------------------------------------------------
+# Purely Order Service
+# ----------------------------------------------------
+purelyOrderService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mongo
+    tag: "4.4"
+  containerPort: 27017
+  pvc:
+    storage: 1Gi
+  env:
+    database: purely_order_service
+    username: root
+    password: example
+  service:
+    type: ClusterIP
+    port: 27017
+
+# -----------------------------
+# Purely Product Service
+# -----------------------------
+purelyProductService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mongo
+    tag: "4.4"
+  containerPort: 27017
+  pvc:
+    storage: 1Gi
+  env:
+    database: purely_product_service
+    username: root
+    password: example
+  initScriptsPath: /home/init-script/purely_product_service
+  service:
+    type: ClusterIP
+    port: 27017
+
+# ------------------------------------------------------------------------------
+# User Service
+# ------------------------------------------------------------------------------
+userService:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: mohamedelrefy20/user-service
+    tag: latest
+  containerPort: 9050
+  init:
+    mongoHost: purely-auth-service
+    mongoPort: 27017
+    eurekaHost: eureka-server
+    eurekaPort: 8761
+  env:
+    securityLogLevel: DEBUG
+    eurekaDefaultZone: http://eureka-server:8761/eureka/
+  service:
+    type: ClusterIP
+    port: 9050
+
+# -------------------------------------------------------------------
+# Ingress
+# -------------------------------------------------------------------
+ingress:
+  enabled: true
+  host: purely.com
+  paths:
+    frontend:
+      path: /()(.*)
+      service: frontend
+      port: 80
+    apiGateway:
+      path: /api-gateway(/|$)(.*)
+      service: api-gateway
+      port: 8080
+
+#---------------------------------------
+# secrets
+#---------------------------------------
+
+secretName: secrets
+
+secrets: 
+  mongoUser: cm9vdA==
+  mongoPass: ZXhhbXBsZQ==
+  springMailUsername: ZWxyZWZ5bW9oYW1lZDIwQGdtYWlsLmNvbQ==
+  springMailPassword: ZmhmeCBjemFpIG1oeWogcnlvbg==
+  jwtSecret: fD09PT09PT09PT09c3ByaW5nPWJvb3Q9cmVhY3Rqcz1wdXJlbHk9PT09PT09PT09fA==

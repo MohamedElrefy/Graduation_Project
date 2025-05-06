@@ -1,0 +1,58 @@
+{{- if .Values.authService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.authService.replicaCount }}
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.authService.init.mongoHost }} {{ .Values.authService.init.mongoPort }}; do echo 'Waiting for MongoDB...'; sleep 5; done;"
+        - name: wait-for-eureka
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "until nc -z -v -w30 {{ .Values.authService.init.eurekaHost }} {{ .Values.authService.init.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"
+      containers:
+        - name: auth-service
+          image: "{{ .Values.authService.image.repository }}:{{ .Values.authService.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.authService.containerPort }}    
+          envFrom:
+           - configMapRef:
+                name: auth-service-config  
+           - secretRef:
+               name: {{ .Values.secretName }}  
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: {{ .Values.authService.service.port }}
+      targetPort: {{ .Values.authService.containerPort }}
+  type: {{ .Values.authService.service.type }}
+
+{{- end }}

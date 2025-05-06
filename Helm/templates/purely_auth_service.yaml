@@ -1,0 +1,53 @@
+{{- if .Values.purelyAuthService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purely-auth-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.purelyAuthService.replicaCount }}
+  selector:
+    matchLabels:
+      app: purely-auth-service
+  template:
+    metadata:
+      labels:
+        app: purely-auth-service
+    spec:
+      containers:
+        - name: mongo
+          image: {{ .Values.purelyAuthService.image.repository }}:{{ .Values.purelyAuthService.image.tag }}
+          ports:
+            - containerPort: {{ .Values.purelyAuthService.containerPort }}
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.purelyAuthService.env.database }}
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: {{ .Values.purelyAuthService.env.username }}
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: {{ .Values.purelyAuthService.env.password }}
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-data
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: purely-auth-service-pvc
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: purely-auth-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: purely-auth-service
+  ports:
+    - port: {{ .Values.purelyAuthService.service.port }}
+      targetPort: {{ .Values.purelyAuthService.containerPort }}
+  type: {{ .Values.purelyAuthService.service.type }}
+
+{{- end }}
