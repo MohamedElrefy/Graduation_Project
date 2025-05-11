@@ -115,6 +115,7 @@ frontend:
   service:
     type: ClusterIP
     port: 80
+    nodePort: 30080
   
 
 # --------------------------------------------
@@ -236,7 +237,7 @@ purelyCategoryService:
     database: purely_category_service
     username: root
     password: example
-  initScriptPath: /home/init-script/purely_category_service
+  initScriptPath: /home/ubuntu/Desktop/Graduation_Project/mongo-init/purely_category_service
   service:
     type: ClusterIP
     port: 27017
@@ -278,7 +279,7 @@ purelyProductService:
     database: purely_product_service
     username: root
     password: example
-  initScriptsPath: /home/init-script/purely_product_service
+  initScriptsPath: /home/ubuntu/Desktop/Graduation_Project/mongo-init/purely_product_service
   service:
     type: ClusterIP
     port: 27017
