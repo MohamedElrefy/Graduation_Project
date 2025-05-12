@@ -57,7 +57,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   
 data:
-  API_BASE_URL: "http://$(INSTANCE_IP):30080/api-gateway"
+  REACT_APP_API_BASE_URL: "http://{{ public_ip }}:30080/api-gateway"
 
 
 ---
