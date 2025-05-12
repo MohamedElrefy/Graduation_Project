@@ -5,6 +5,7 @@ metadata:
   name: purely-auth-service-pvc
   namespace: {{ .Values.namespace }}
 spec:
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
@@ -21,6 +22,7 @@ metadata:
   name: purely-cart-service-pvc
   namespace: {{ .Values.namespace }}
 spec:
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
@@ -38,7 +40,7 @@ metadata:
   name: purely-category-service-pvc
   namespace: {{ .Values.namespace }}
 spec:
-  storageClassName: {{ .Values.purelyCategoryService.pvc.storageClassName }}
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
@@ -57,6 +59,7 @@ metadata:
   name: purely-order-service-pvc
   namespace: {{ .Values.namespace }}
 spec:
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
@@ -75,7 +78,7 @@ metadata:
   name: purely-product-service-pvc
   namespace: {{ .Values.namespace }}
 spec:
-  storageClassName: standard
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
