@@ -89,11 +89,9 @@
         update: yes
         force: yes
       become: false
-      become_user: "{{ ansible_user }}"
 
     - name: Install Helm chart (graduation-release)
       become: false
-      become_user: "{{ ansible_user }}"
       command: >
         helm install graduation-release .
         --set API_BASE_URL=http://{{ public_ip }}:30080/api-gateway
