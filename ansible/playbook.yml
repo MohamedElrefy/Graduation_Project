@@ -8,7 +8,7 @@
     k3s_version: "v1.24.8+k3s1"
     helm_version: "v3.9.4"
     public_ip: "192.168.1.2"
-
+#test change
   tasks:
     - name: Update system packages
       apt:
