@@ -69,19 +69,8 @@ pipeline {
             }
         }
 
-        stage('Deploy Updates to Kubernetes') {
-            steps {
-                script {
-                    dir('Helm') {
-                        sh '''
-                            helm upgrade --install ${HELM_RELEASE_NAME} . \
-                                --namespace ${KUBERNETES_NAMESPACE}
-                        '''
-                    }
-                }
-            }
-        }
-    }
+        
+    
 
      post {
         success {
