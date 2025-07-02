@@ -18,7 +18,6 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    // Build Docker images for each service
                     sh '''
                         docker build -t ${DOCKER_REGISTRY}/cart-service:latest ./microservice-backend/cart-service
                         docker build -t ${DOCKER_REGISTRY}/order-service:latest ./microservice-backend/order-service
@@ -68,11 +67,9 @@ pipeline {
                 }
             }
         }
+    }
 
-        
-    
-
-     post {
+    post {
         success {
             slackSend(channel: '#jenkins', message: "Build #${env.BUILD_NUMBER} - Success: ${env.BUILD_URL}")
         }
