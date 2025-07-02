@@ -1,0 +1,105 @@
+---
+- name: Install K3s, Helm, Git, and Deploy Services
+  hosts: agents
+  become: true
+  vars:
+    base_dir: "/home/{{ ansible_user }}/Desktop/Graduation_Project"
+    github_repo: "https://github.com/kasssas/Graduation_Project.git"
+    k3s_version: "v1.24.8+k3s1"
+    helm_version: "v3.9.4"
+    public_ip: "192.168.1.2"
+
+  tasks:
+    - name: Update system packages
+      apt:
+        update_cache: yes
+
+    - name: Install dependencies
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - git
+        state: present
+
+    - name: Install K3s
+      shell: curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: /usr/local/bin/k3s
+
+    - name: Symlink kubectl to /usr/local/bin
+      file:
+        src: /usr/local/bin/k3s
+        dest: /usr/local/bin/kubectl
+        state: link
+
+    - name: Wait for K3s to start
+      wait_for:
+        port: 6443
+        state: started
+        timeout: 60
+
+    - name: Create kube config directory
+      file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Copy kubeconfig to user home
+      copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "/home/{{ ansible_user }}/.kube/config"
+        remote_src: yes
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+
+    - name: Replace default kubeconfig server with localhost
+      replace:
+        path: "/home/{{ ansible_user }}/.kube/config"
+        regexp: 'https://127\.0\.0\.1:6443'
+        replace: 'https://localhost:6443'
+
+    - name: Download Helm install script
+      get_url:
+        url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        dest: /tmp/get_helm.sh
+        mode: '0755'
+
+    - name: Install Helm
+      command: bash /tmp/get_helm.sh
+
+    - name: Create Helm config directory
+      file:
+        path: "/home/{{ ansible_user }}/.config/helm/registry"
+        state: directory
+        mode: '0755'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    - name: Clone GitHub repository
+      git:
+        repo: "{{ github_repo }}"
+        dest: "{{ base_dir }}"
+        version: main
+        update: yes
+        force: yes
+      become: false
+      become_user: "{{ ansible_user }}"
+
+    - name: Install Helm chart (graduation-release)
+      become: false
+      become_user: "{{ ansible_user }}"
+      command: >
+        helm install graduation-release .
+        --set API_BASE_URL=http://{{ public_ip }}:30080/api-gateway
+      args:
+        chdir: "{{ base_dir }}/Helm"
+      environment:
+        KUBECONFIG: "/home/{{ ansible_user }}/.kube/config"
+        HOME: "/home/{{ ansible_user }}"
+        XDG_CONFIG_HOME: "/home/{{ ansible_user }}/.config"

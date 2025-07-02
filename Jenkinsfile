@@ -4,7 +4,8 @@ pipeline {
     environment {
         DOCKER_REGISTRY = 'mohamedelrefy20'
         KUBERNETES_NAMESPACE = 'purely-app'
-        HELM_RELEASE_NAME = 'Anakonda'
+        HELM_RELEASE_NAME = 'graduation-release'
+        ANSIBLE_PLAYBOOK_DIR = 'ansible'
     }
     
     stages {
@@ -13,17 +14,6 @@ pipeline {
                 checkout scm
             }
         }
-        
-        stage('Build') {
-            steps {
-                script {
-                    // Build the application
-                    sh 'mvn clean package -DskipTests'
-                }
-            }
-        }
-        
-        
         
         stage('Build Docker Images') {
             steps {
@@ -70,10 +60,22 @@ pipeline {
                 }
             }
         }
+
+        stage('Apply Ansible Playbook') {
+            steps {
+                script {
+                    dir("${ANSIBLE_PLAYBOOK_DIR}") {
+                        sh '''
+                            ansible-playbook -i inventory playbook.yml
+                        '''
+                    }
+                }
+            }
+        }
         
         
         
-        stage('Deploy to Kubernetes') {
+        stage('Deploy Updates to Kubernetes') {
             steps {
                 script {
                     // Deploy using Helm
