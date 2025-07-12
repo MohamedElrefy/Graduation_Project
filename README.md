@@ -35,7 +35,7 @@
 
 - This is an e-commerce web application, a platform dedicated to health and wellness products using <a href="https://medium.com/javarevisited/getting-started-with-microservices-4266f440086f">Microservice architecture pattern</a>.
   
-- Secure authentication and authorization functionalities using Spring Security and JWT. Integrated email verification during sign-up..
+- Secure authentication and authorization functionalities using Spring Security and JWT. Integrated email verification during sign-up.
   
 - Comprehensive product and category data management, including adding, editing, viewing, and searching.
   
