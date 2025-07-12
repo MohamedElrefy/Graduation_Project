@@ -23,7 +23,7 @@ spec:
             - "until nc -z -v -w30 {{ .Values.notificationService.eurekaHost }} {{ .Values.notificationService.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"    
       containers:
         - name: notification-service
-          image: "{{ .Values.notificationService.image.repository }}:{{ .Values.notificationService.image.tag }}"
+          image: "{{ .Values.notificationService.image.repository }}"
           ports:
             - containerPort: {{ .Values.notificationService.containerPort }}
           envFrom:

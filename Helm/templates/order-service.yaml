@@ -29,7 +29,7 @@ spec:
             - "until nc -z -v -w30 {{ .Values.orderService.eurekaHost }} {{ .Values.orderService.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"        
       containers:
         - name: order-service
-          image: "{{ .Values.orderService.image.repository }}:{{ .Values.orderService.image.tag }}"
+          image: "{{ .Values.orderService.image.repository }}"
           ports:
             - containerPort: {{ .Values.orderService.containerPort }}
           envFrom:

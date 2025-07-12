@@ -29,7 +29,7 @@ spec:
             - "until nc -z -v -w30 {{ .Values.categoryService.init.eurekaHost }} {{ .Values.categoryService.init.eurekaPort }}; do echo 'Waiting for Eureka...'; sleep 5; done;"
       containers:
         - name: category-service
-          image: "{{ .Values.categoryService.image.repository }}:{{ .Values.categoryService.image.tag }}"
+          image: "{{ .Values.categoryService.image.repository }}"
           ports:
             - containerPort: {{ .Values.categoryService.containerPort }}
           envFrom:

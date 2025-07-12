@@ -9,8 +9,7 @@ apiGateway:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/api-gateway
-    tag: latest
+    repository: mohamedelrefy20/api-gateway@sha256:a322ed2e2122708af848623bc1e80a24181ea26252c08408c3cbf2b866dd548e
   containerPort: 8080
   service:
     type: ClusterIP
@@ -25,8 +24,7 @@ authService:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/auth-service
-    tag: latest
+    repository: mohamedelrefy20/auth-service@sha256:23ac1cb55a678304139176eeace64e2305dbeeade75e0468ff33e0b04075dc3d
   containerPort: 9030
   service:
     type: ClusterIP
@@ -47,8 +45,7 @@ cartService:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/cart-service
-    tag: latest
+    repository: mohamedelrefy20/cart-service@sha256:659b70f93d94051857716e3f5bc3a7060b78a95a7fe287a1caa0b1c79f95347d
   containerPort: 9060
   service:
     type: ClusterIP
@@ -71,7 +68,7 @@ categoryService:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/category-service
+    repository: mohamedelrefy20/category-service@sha256:d510dc4e2f7cda451f841f0b4aebc91c84471affdbfb8db6ab2984ae285d9474
     tag: latest
   containerPort: 9000
   service:
@@ -93,8 +90,7 @@ eurekaServer:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/eureka-server
-    tag: latest
+    repository: mohamedelrefy20/eureka-server@sha256:d1029a8ca8a03160beb7bf4ed46fbeb82e1e432eb6b1a481ade140e3632de672
   containerPort: 8761
   service:
     type: ClusterIP
@@ -109,8 +105,7 @@ frontend:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/frontend
-    tag: latest
+    repository: mohamedelrefy20/frontend@sha256:d08a6c22191b89397be31ed460df6813cb843a734b8948a4d20059ff578a8aac
   containerPort: 80
   service:
     type: NodePort
@@ -125,8 +120,7 @@ notificationService:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/notification-service
-    tag: latest
+    repository: mohamedelrefy20/notification-service@sha256:c6278e469aaf1ec99da8f3e89cfa1855abe727fa671f5f745588d4419c5247c9
   containerPort: 9020
   service:
     type: ClusterIP
@@ -144,8 +138,7 @@ orderService:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/order-service
-    tag: latest
+    repository: mohamedelrefy20/order-service@sha256:7fd26fb39e4cb1698797f6e9691567b394a1a6dbe148398af2df74d66a61ecad
   containerPort: 9070
   service:
     type: ClusterIP
@@ -165,7 +158,7 @@ productService:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/product-service
+    repository: mohamedelrefy20/product-service@sha256:bec9863748c2b8c0fd1bf8368f4aa9257598ad81243f41894c3fc6adf6a6c18a
     tag: latest
   containerPort: 9010
   service:
@@ -291,7 +284,7 @@ userService:
   enabled: true
   replicaCount: 1
   image:
-    repository: mohamedelrefy20/user-service
+    repository: mohamedelrefy20/user-service@sha256:c2fc81694a103533f9248e3a4c4b8f6da7d1f31036cdc2717641ece9396b7715
     tag: latest
   containerPort: 9050
   init:

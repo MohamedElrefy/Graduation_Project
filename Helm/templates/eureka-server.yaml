@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: eureka-server
-          image: "{{ .Values.eurekaServer.image.repository }}:{{ .Values.eurekaServer.image.tag }}"
+          image: "{{ .Values.eurekaServer.image.repository }}"
           ports:
             - containerPort: {{ .Values.eurekaServer.containerPort }}
           env:

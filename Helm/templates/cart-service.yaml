@@ -54,7 +54,7 @@ spec:
               done
       containers:
         - name: cart-service
-          image: "{{ .Values.cartService.image.repository }}:{{ .Values.cartService.image.tag }}"
+          image: "{{ .Values.cartService.image.repository }}"
           ports:
             - containerPort: {{ .Values.cartService.containerPort }}
           envFrom:
